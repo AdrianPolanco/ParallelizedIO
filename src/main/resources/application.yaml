@@ -1,0 +1,16 @@
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 1GB
+      max-request-size: 1GB
+  application:
+    name: demo
+
+minio:
+    url: http://localhost:9000
+    access-key: admin
+    secret-key: admin1234
+    bucket: demo
+    upload-path: upload
+    upload-temp-path: upload-temp

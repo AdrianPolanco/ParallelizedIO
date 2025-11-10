@@ -1,0 +1,36 @@
+﻿version: '4'
+
+services:
+  database:
+    image: 'postgres:18.0'
+    container_name: 'my_postgres_db'
+    environment:
+      POSTGRES_USER: 'admin'
+      POSTGRES_PASSWORD: 'admin'
+      POSTGRES_DB: 'demo_db'
+    ports:
+        - '5434:5432'
+    volumes:
+        - 'db_data:/var/lib/postgresql'
+    networks:
+        demo:
+  minio:
+    image: 'minio/minio:latest'
+    container_name: 'my_minio'
+    environment:
+      MINIO_ROOT_USER: 'admin'
+      MINIO_ROOT_PASSWORD: 'admin1234'
+    command: 'server /data --console-address ":9001"'
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - 'minio_data:/data'
+    networks:
+      demo:
+networks:
+  demo:
+    driver: 'bridge'
+volumes:
+    db_data:
+    minio_data:
