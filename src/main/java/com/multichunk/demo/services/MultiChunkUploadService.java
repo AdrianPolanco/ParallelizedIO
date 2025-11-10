@@ -10,10 +10,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -63,12 +60,13 @@ public class MultiChunkUploadService {
         var chunkSize = chunkCountMB * 1024L * 1024L;
         byte[] buffer = new byte[(int)chunkSize];
         int bytesRead;
-        AtomicInteger partNumber = new AtomicInteger(0);
+        //AtomicInteger partNumber = new AtomicInteger(0);
+        int partNumber = 0;
         List<CompletableFuture<String>> futures = new ArrayList<>();
 
         while((bytesRead = inputStream.read(buffer)) != -1){
             byte[] chunkData = Arrays.copyOf(buffer, bytesRead);
-            int currentPart = partNumber.incrementAndGet();
+            int currentPart = partNumber++;
             int finalBytesRead = bytesRead;
             int retries = 3;
 
@@ -156,7 +154,7 @@ public class MultiChunkUploadService {
                         String intermediateName = fileName + ".batch" + UUID.randomUUID();
                         List<ComposeSource> sources = batch.stream()
                                 .map(p -> ComposeSource.builder().bucket(bucket).object(p).build())
-                                .collect(Collectors.toList());
+                                .toList();
 
                         minioClient.composeObject(
                                 ComposeObjectArgs.builder()
@@ -193,5 +191,21 @@ public class MultiChunkUploadService {
         }
 
         return fileName;
+    }
+
+    public Map<String, String> generateUploadUrl(String fileName) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        var objectName = uploadPath + "/" + fileName;
+
+        var url = minioClient.getPresignedObjectUrl(
+                GetPresignedObjectUrlArgs
+                        .builder()
+                        .bucket(bucket)
+                        .object(objectName)
+                        .method(Method.PUT)
+                        .expiry(60 * 10) // 1 hour
+                        .build()
+        );
+
+        return Map.of("url", url, "objectName", objectName);
     }
 }

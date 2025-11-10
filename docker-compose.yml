@@ -1,6 +1,4 @@
-﻿version: '4'
-
-services:
+﻿services:
   database:
     image: 'postgres:18.0'
     container_name: 'my_postgres_db'
@@ -20,6 +18,7 @@ services:
     environment:
       MINIO_ROOT_USER: 'admin'
       MINIO_ROOT_PASSWORD: 'admin1234'
+      MINIO_WEBHOOK_TOKEN: 'S8h3Pd5sL2r9vV1dZxT3qL9bU6eN8tJ1'
     command: 'server /data --console-address ":9001"'
     ports:
       - '9000:9000'
@@ -28,9 +27,21 @@ services:
       - 'minio_data:/data'
     networks:
       demo:
+  redis:
+    image: 'redis:8.2.3'
+    container_name: 'my_redis'
+    environment:
+      REDIS_ARGS: '--requirepass admin1234 --user admin on > mypassword ~* allcommands --user default off nopass nocommands'
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'redis_data:/data'
+    networks:
+      demo:
 networks:
   demo:
     driver: 'bridge'
 volumes:
     db_data:
     minio_data:
+    redis_data:
