@@ -18,17 +18,32 @@
     environment:
       MINIO_ROOT_USER: 'admin'
       MINIO_ROOT_PASSWORD: 'admin1234'
-      MINIO_NOTIFY_WEBHOOK_ENABLE_DEMO: 'on'
-      MINIO_NOTIFY_WEBHOOK_ENDPOINT_DEMO: 'http://localhost:8080/files/upload/webhook'
-      MINIO_NOTIFY_WEBHOOK_AUTH_TOKEN_DEMO: 'S8h3Pd5sL2r9vV1dZxT3qL9bU6eN8tJ1'
-    command: 'server /data --console-address ":9001"'
     ports:
       - '9000:9000'
       - '9001:9001'
     volumes:
       - 'minio_data:/data'
-      - './init-minio.sh:/docker-entrypoint-init.d/init-minio.sh'
-    entrypoint: [ "/bin/sh", "-c", "minio server /data --console-address :9001 & sleep 5 && sh /docker-entrypoint-init.d/init-minio.sh && wait" ]
+      - 'minio_config:/root/.minio'
+    command: server /data --console-address ":9001"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      demo:
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/ready" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  minio-init:
+    image: 'minio/mc:latest'
+    container_name: 'minio_init'
+    depends_on:
+      minio:
+        condition: service_healthy
+    volumes:
+      - './init-minio.sh:/init-minio.sh'
+    entrypoint: [ "/bin/sh", "/init-minio.sh" ]
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
@@ -50,4 +65,5 @@ networks:
 volumes:
     db_data:
     minio_data:
+    minio_config:
     redis_data:

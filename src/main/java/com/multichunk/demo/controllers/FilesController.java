@@ -43,7 +43,7 @@ public class FilesController {
     }
 
     @PostMapping("/upload/webhook")
-    public ResponseEntity<String> uploadWebhook(@RequestParam Map<String, String> allParams) {
+    public ResponseEntity<String> uploadWebhook(@RequestBody String allParams) {
         System.out.println("Received webhook with params: " + allParams);
         return ResponseEntity.ok("Webhook received");
     }

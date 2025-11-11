@@ -1,18 +1,33 @@
 #!/bin/sh
-set -e
 
 echo "Esperando a que MinIO esté disponible..."
-until curl -s http://localhost:9000/minio/health/ready > /dev/null; do
-  sleep 1
+sleep 5
+
+# Configurar alias mc (usa el nombre del servicio en docker-compose)
+echo "Configurando alias de MinIO..."
+until mc alias set myminio http://minio:9000 admin admin1234 2>/dev/null; do
+  echo "Reintentando conexión con MinIO..."
+  sleep 2
 done
 
 echo "MinIO listo, aplicando configuración..."
-mc alias set myminio http://localhost:9000 admin admin1234
+
+# Crear el bucket si no existe
+mc mb myminio/demo --ignore-existing
+
+# Configurar webhook para eventos de bucket
 mc admin config set myminio notify_webhook:1 \
   endpoint="http://host.docker.internal:8080/files/upload/webhook" \
   queue_limit="10"
 
-echo "Reiniciando MinIO..."
-mc admin service restart myminio --json || true
+# Reiniciar servicio para aplicar configuración
+mc admin service restart myminio
 
-echo "Configuración aplicada y reinicio ejecutado."
+echo "Esperando reinicio de MinIO..."
+sleep 5
+
+# Configurar eventos del bucket para usar el webhook
+mc event add myminio/demo arn:minio:sqs::1:webhook --event put
+
+echo "Webhook configurado y vinculado al bucket 'demo'"
+echo "Eventos configurados: PUT (subida de archivos)"
