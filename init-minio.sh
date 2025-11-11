@@ -18,6 +18,7 @@ mc mb myminio/demo --ignore-existing
 # Configurar webhook para eventos de bucket
 mc admin config set myminio notify_webhook:1 \
   endpoint="http://host.docker.internal:8080/files/upload/webhook" \
+  auth_token="Bearer 6jvX8^2uo#^Zc+Ve@1K@Rx6ZBt@9LfxRc8gd#os/wf^=" \
   queue_limit="10"
 
 # Reiniciar servicio para aplicar configuración

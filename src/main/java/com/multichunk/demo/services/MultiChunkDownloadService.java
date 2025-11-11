@@ -1,6 +1,6 @@
 package com.multichunk.demo.services;
 
-import com.multichunk.demo.helpers.ProgressTracker;
+import com.multichunk.demo.components.ProgressTracker;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.StatObjectArgs;

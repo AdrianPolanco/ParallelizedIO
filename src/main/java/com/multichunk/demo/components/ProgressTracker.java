@@ -1,4 +1,4 @@
-package com.multichunk.demo.helpers;
+package com.multichunk.demo.components;
 
 import org.springframework.stereotype.Component;
 
