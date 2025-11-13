@@ -22,3 +22,8 @@ minio:
     upload-path: upload
     upload-temp-path: upload-temp
     webhook-token: 6jvX8^2uo#^Zc+Ve@1K@Rx6ZBt@9LfxRc8gd#os/wf^=
+
+redis-streams:
+  uploads:
+    consumer-group: minio_uploads_group
+    stream-key: minio_uploads

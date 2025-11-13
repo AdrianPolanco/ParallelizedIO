@@ -14,16 +14,6 @@ public class ThreadPoolConfig {
 
     @Bean(name = "downloadExecutor")
     public Executor downloadExecutor() {
-        /*ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-
-        executor.setCorePoolSize(4);
-        executor.setMaxPoolSize(8);
-        executor.setQueueCapacity(100);
-        executor.setThreadNamePrefix("download-worker-");
-        executor.setAllowCoreThreadTimeOut(true);
-        executor.initialize();
-        return executor;*/
-
         return Executors.newVirtualThreadPerTaskExecutor();
     }
 

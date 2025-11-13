@@ -1,5 +1,6 @@
 package com.multichunk.demo.services;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.stream.RecordId;
 import org.springframework.data.redis.connection.stream.StreamRecords;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -10,6 +11,9 @@ import java.util.logging.Logger;
 
 @Service
 public class WebhookStreamProducer {
+
+    @Value("${redis-streams.uploads.stream-key}")
+    private String streamKey;
     private final RedisTemplate<String, Object> redisTemplate;
     private final Logger logger = Logger.getLogger(WebhookStreamProducer.class.getName());
 
@@ -23,7 +27,7 @@ public class WebhookStreamProducer {
                 .add(
                         StreamRecords
                                 .newRecord()
-                                .in("minio_uploads")
+                                .in(streamKey)
                                 .ofMap(eventData)
                 );
 

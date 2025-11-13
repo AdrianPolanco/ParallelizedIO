@@ -21,7 +21,7 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("io.minio:minio:8.6.0")
-    implementation("org.redisson:redisson-spring-boot-starter:3.52.0")
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
