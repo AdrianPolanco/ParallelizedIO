@@ -2,17 +2,10 @@ package com.multichunk.demo.controllers;
 
 import com.multichunk.demo.services.MultiChunkUploadService;
 import com.multichunk.demo.services.WebhookStreamProducer;
-import io.minio.errors.*;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.logging.Logger;
 

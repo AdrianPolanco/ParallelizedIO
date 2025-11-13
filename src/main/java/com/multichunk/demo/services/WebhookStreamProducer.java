@@ -28,7 +28,7 @@ public class WebhookStreamProducer {
                         StreamRecords
                                 .newRecord()
                                 .in(streamKey)
-                                .ofMap(eventData)
+                                .ofObject(eventData)
                 );
 
         logger.info("Produced event to Redis stream 'minio_uploads' with ID: " + id.getValue());
