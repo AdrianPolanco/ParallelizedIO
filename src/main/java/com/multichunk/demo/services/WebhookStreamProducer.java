@@ -1,5 +1,8 @@
 package com.multichunk.demo.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.stream.RecordId;
 import org.springframework.data.redis.connection.stream.StreamRecords;
@@ -17,18 +20,18 @@ public class WebhookStreamProducer {
     private final RedisTemplate<String, Object> redisTemplate;
     private final Logger logger = Logger.getLogger(WebhookStreamProducer.class.getName());
 
-    public WebhookStreamProducer(RedisTemplate<String, Object> redisTemplate) {
+    public WebhookStreamProducer(@Qualifier("redisJsonTemplate") RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
-    public void produceEvent(Map<String, Object> eventData) {
+    public void produceEvent(Map<String, Object> eventData) throws JsonProcessingException {
         RecordId id = redisTemplate
                 .opsForStream()
                 .add(
                         StreamRecords
                                 .newRecord()
                                 .in(streamKey)
-                                .ofObject(eventData)
+                                .ofMap(Map.of("payload", eventData))
                 );
 
         logger.info("Produced event to Redis stream 'minio_uploads' with ID: " + id.getValue());

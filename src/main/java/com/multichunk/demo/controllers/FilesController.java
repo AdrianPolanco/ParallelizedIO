@@ -1,5 +1,6 @@
 package com.multichunk.demo.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.multichunk.demo.services.MultiChunkUploadService;
 import com.multichunk.demo.services.WebhookStreamProducer;
 import org.springframework.http.MediaType;
@@ -33,7 +34,7 @@ public class FilesController {
     }
 
     @PostMapping("/upload/webhook")
-    public ResponseEntity<String> uploadWebhook(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<String> uploadWebhook(@RequestBody Map<String, Object> payload) throws JsonProcessingException {
         logger.info("Received webhook with payload: " + payload);
         webhookStreamProducer.produceEvent(payload);
         return ResponseEntity.ok("Webhook received");

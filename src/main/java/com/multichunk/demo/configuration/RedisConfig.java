@@ -2,6 +2,7 @@ package com.multichunk.demo.configuration;
 
 import com.multichunk.demo.components.UploadStreamListener;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
@@ -9,15 +10,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.connection.stream.ObjectRecord;
 import org.springframework.data.redis.connection.stream.ReadOffset;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer.StreamMessageListenerContainerOptions;
 import java.net.UnknownHostException;
 import java.time.Duration;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @Configuration
@@ -51,22 +55,6 @@ public class RedisConfig {
         return new LettuceConnectionFactory(redisProperties.getHost(), redisProperties.getPort());
     }
 
-    /*private void createRedisStreamsConnectionIfNotExists(
-            RedisConnectionFactory connectionFactory, String consumerGroup, String streamKey) {
-        // This method can be expanded to include logic for creating Redis Streams connections if needed// Crrently, it serves as a placeholder to indicate where such logic would go.u
-        try{
-            redisConnectionFactory().getConnection().streamCommands().xGroupCreate(
-                    streamKey.getBytes(),
-                    consumerGroup,
-                    ReadOffset.from("0-0"),
-                    true
-            );
-        }catch(RedisSystemException e){
-            // Handle exception if necessary
-            logger.severe("Error creating Redis Streams connection: " + e.getCause().getMessage());
-        }
-    }*/
-
     @PostConstruct
     public void initRedisGroups() {
         try (var connection = redisConnectionFactory().getConnection()) {
@@ -89,31 +77,27 @@ public class RedisConfig {
 
 
     @Bean
-    public StreamMessageListenerContainer<String, ObjectRecord<String, Object>> redisStreamContainer(
-            RedisConnectionFactory connectionFactory, UploadStreamListener uploadStreamListener) throws UnknownHostException {
-        //createRedisStreamsConnectionIfNotExists(connectionFactory, consumerGroup, streamKey);
+    public StreamMessageListenerContainer<String, MapRecord<String, String, String>> redisStreamContainer(
+            RedisConnectionFactory connectionFactory, UploadStreamListener uploadStreamListener,
+            @Qualifier("redisJsonTemplate") RedisTemplate<String, Object> redisTemplate) throws UnknownHostException {
 
-        StreamMessageListenerContainerOptions<String, ObjectRecord<String, Object>> options =
+        StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options =
                 StreamMessageListenerContainerOptions.builder()
                         .batchSize(1)
                         .pollTimeout(Duration.ofSeconds(2))
                         //.executor(executor)
-                        .targetType(Object.class)
                         .build();
 
-        StreamMessageListenerContainer<String, ObjectRecord<String, Object>> container =
-                StreamMessageListenerContainer.create(connectionFactory, options);
-
-        return container;
+        return StreamMessageListenerContainer.create(connectionFactory, options);
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+    public RedisTemplate<String, Object> redisJsonTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
 
-        var stringSerializer = new StringRedisSerializer();
         var jsonSerializer = new GenericJackson2JsonRedisSerializer();
+        var stringSerializer = new StringRedisSerializer();
 
         template.setKeySerializer(stringSerializer);
         template.setHashKeySerializer(stringSerializer);

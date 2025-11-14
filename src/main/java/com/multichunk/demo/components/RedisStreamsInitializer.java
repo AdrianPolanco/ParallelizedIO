@@ -2,10 +2,8 @@ package com.multichunk.demo.components;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.connection.stream.Consumer;
-import org.springframework.data.redis.connection.stream.ObjectRecord;
-import org.springframework.data.redis.connection.stream.ReadOffset;
-import org.springframework.data.redis.connection.stream.StreamOffset;
+import org.springframework.data.redis.connection.stream.*;
+import org.springframework.data.redis.stream.StreamListener;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +12,7 @@ import java.net.UnknownHostException;
 
 @Component
 public class RedisStreamsInitializer {
-    private final StreamMessageListenerContainer<String, ObjectRecord<String, Object>> container;
+    private final StreamMessageListenerContainer<String, MapRecord<String, String, String>> container;
     private final UploadStreamListener uploadStreamListener;
 
     @Value("${redis-streams.uploads.consumer-group}")
@@ -23,7 +21,7 @@ public class RedisStreamsInitializer {
     private String streamKey;
 
     public RedisStreamsInitializer(
-            StreamMessageListenerContainer<String, ObjectRecord<String, Object>> container,
+            StreamMessageListenerContainer<String, MapRecord<String, String, String>> container,
             UploadStreamListener uploadStreamListener) {
         this.container = container;
         this.uploadStreamListener = uploadStreamListener;
