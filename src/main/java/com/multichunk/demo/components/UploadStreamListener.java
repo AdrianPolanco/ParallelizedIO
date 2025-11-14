@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 public class UploadStreamListener implements StreamListener<String, MapRecord<String, String, String>> {
     private static final Logger logger = Logger.getLogger(UploadStreamListener.class.getName());
     private final RedisTemplate<String, Object> redisTemplate;
-    private final ObjectMapper objectMapper;
 
     @Value("${redis-streams.uploads.consumer-group}")
     private String consumerGroup;
@@ -31,7 +30,6 @@ public class UploadStreamListener implements StreamListener<String, MapRecord<St
 
     public UploadStreamListener(@Qualifier("redisJsonTemplate") RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
-        this.objectMapper = new ObjectMapper();
     }
 
     @Override

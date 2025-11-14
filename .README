@@ -1,0 +1,60 @@
+ Body: {
+ // LinkedHashMap
+ "EventName":"s3:ObjectCreated:Put",
+ "Key":"demo/upload/softcorp.jpg",
+ "Records": [
+    [
+         {
+            //LinkedHashMap
+             "eventVersion":"2.0",
+             "eventSource":"minio:s3",
+             "awsRegion":"",
+             "eventTime":"2025-11-14T14:41:51.263Z",
+             "eventName":"s3:ObjectCreated:Put",
+             "userIdentity":{
+                  //LinkedHashMap
+                 "principalId":"admin"
+             },
+             "requestParameters":{
+                 //LinkedHashMap
+                 "principalId":"admin",
+                 "region":"",
+                 "sourceIPAddress":"172.25.0.1"
+             },
+             "responseElements": {
+                 //LinkedHashMap
+                 "x-amz-id-2":"dd9025bab4ad464b049177c95eb6ebf374d3b3fd1af9251148b658df7ac2e3e8",
+                 "x-amz-request-id":"1877E6960832FA40",
+                 "x-minio-deployment-id":"5401a74b-dab8-4db7-baed-ed35046161ae",
+                 "x-minio-origin-endpoint":"http://172.25.0.3:9000"
+             },
+             "s3":{
+                 "s3SchemaVersion":"1.0",
+                 "configurationId":"Config",
+                 "bucket":{
+                 "name":"demo",
+                 "ownerIdentity":{
+                 "principalId":"admin"
+                 },
+                 "arn":"arn:aws:s3:::demo"
+             },
+             "object":{
+                 "key":"upload%2Fsoftcorp.jpg",
+                 "size":99447,
+                 "eTag":"f21fe55b66b941a1f1e673bdb915a373",
+                 "contentType":"binary/octet-stream",
+                 "userMetadata":{
+                     "content-type":"binary/octet-stream"
+             },
+             "sequencer":"1877E6960B689686"
+             }
+             },
+             "source":{
+                 "host":"172.25.0.1",
+                 "port":"",
+                 "userAgent":"curl/8.16.0"
+             }
+         }
+    ]
+ ]
+}

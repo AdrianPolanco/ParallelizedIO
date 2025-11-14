@@ -1,5 +1,9 @@
 package com.multichunk.demo.configuration;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.multichunk.demo.components.UploadStreamListener;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -91,12 +95,27 @@ public class RedisConfig {
         return StreamMessageListenerContainer.create(connectionFactory, options);
     }
 
-    @Bean
+    @Bean(name = "redisJsonTemplate")
     public RedisTemplate<String, Object> redisJsonTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
 
-        var jsonSerializer = new GenericJackson2JsonRedisSerializer();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+        mapper.activateDefaultTyping(
+                BasicPolymorphicTypeValidator.builder()
+                        .allowIfSubType(Object.class)
+                        .build(),
+                ObjectMapper.DefaultTyping.NON_FINAL,
+                JsonTypeInfo.As.PROPERTY
+        );
+        // ESTA LÍNEA TE GENERA LOS @class, así que NO LA QUEREMOS
+
+        // La reemplazamos por esto:
+        mapper.deactivateDefaultTyping();
+
+        Jackson2JsonRedisSerializer<Object> jsonSerializer =
+                new Jackson2JsonRedisSerializer<>(Object.class);
         var stringSerializer = new StringRedisSerializer();
 
         template.setKeySerializer(stringSerializer);
