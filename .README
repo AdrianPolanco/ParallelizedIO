@@ -32,22 +32,22 @@
                  "s3SchemaVersion":"1.0",
                  "configurationId":"Config",
                  "bucket":{
-                 "name":"demo",
-                 "ownerIdentity":{
-                 "principalId":"admin"
-                 },
+                     "name":"demo",
+                     "ownerIdentity":{
+                         "principalId":"admin"
+                     },
                  "arn":"arn:aws:s3:::demo"
-             },
-             "object":{
-                 "key":"upload%2Fsoftcorp.jpg",
-                 "size":99447,
-                 "eTag":"f21fe55b66b941a1f1e673bdb915a373",
-                 "contentType":"binary/octet-stream",
-                 "userMetadata":{
-                     "content-type":"binary/octet-stream"
-             },
-             "sequencer":"1877E6960B689686"
-             }
+                 },
+                 "object":{
+                     "key":"upload%2Fsoftcorp.jpg",
+                     "size":99447,
+                     "eTag":"f21fe55b66b941a1f1e673bdb915a373",
+                     "contentType":"binary/octet-stream",
+                     "userMetadata":{
+                         "content-type":"binary/octet-stream"
+                     },
+                     "sequencer":"1877E6960B689686"
+                 }
              },
              "source":{
                  "host":"172.25.0.1",
